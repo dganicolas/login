@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.window.Window
@@ -32,40 +31,56 @@ fun App() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
-            OutlinedTextField(
-                value = usuario,
-                onValueChange = {usuario = it},
-                label = { Text("Usuario")}
-            )
-            OutlinedTextField(
-                value = contrasena,
-                onValueChange = {contrasena = it},
-                label = { Text("Contraseña")},
-                visualTransformation =  if(visibilidad) VisualTransformation.None  else PasswordVisualTransformation('d'),
-                trailingIcon = {
-                    IconToggleButton(
-                        checked = visibilidad,
-                        onCheckedChange = {visibilidad = it}
-                    ) {
-                        Icon(
-                            imageVector = if(!visibilidad){Icons.Default.VisibilityOff}else{Icons.Default.Visibility},
-                            contentDescription = "Clear"
-                        )
-                    }
-                }
-            )
-            Button(onClick = {
+            usuario(usuario){usuario = it}
+
+            contrasena(contrasena,visibilidad,{contrasena = it},{visibilidad = it})
+
+            boton(usuario,contrasena){
                 usuario = ""
                 contrasena = ""
-            },
-                enabled = usuario.isNotBlank() && contrasena.isNotBlank()
-
-
-            ) {
-                Text ("Login")
             }
         }
 
+    }
+}
+
+@Composable
+fun usuario(usuario: String, onUsuario: (String) ->Unit) {
+    OutlinedTextField(
+        value = usuario,
+        onValueChange = onUsuario,
+        label = { Text("Usuario")}
+    )
+}
+@Composable
+fun contrasena(contrasena:String,visibilidad:Boolean, onContrasena: (String) ->Unit,onVisibility:(Boolean)->Unit){
+    OutlinedTextField(
+        value = contrasena,
+        onValueChange = onContrasena,
+        label = { Text("Contraseña")},
+        visualTransformation =  if(visibilidad) VisualTransformation.None  else PasswordVisualTransformation('-'),
+        trailingIcon = {
+            IconToggleButton(
+                checked = visibilidad,
+                onCheckedChange = onVisibility
+            ) {
+                Icon(
+                    imageVector = if(!visibilidad){Icons.Default.VisibilityOff}else{Icons.Default.Visibility},
+                    contentDescription = ""
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun boton(usuario:String,contrasena:String,onButton: ()->Unit){
+    Button(onClick = onButton,
+        enabled = usuario.isNotBlank() && contrasena.isNotBlank()
+
+
+    ) {
+        Text ("Login")
     }
 }
 
